@@ -1,12 +1,88 @@
+# Class
 
+### C++
+
+In C++ struct & class are almost the same. The difference is that struct has default public access and default public inheritance, but class private.
+
+```c++
+class ClassABC{
+public:
+    int fieldA;
+    int fieldB;
+};
+
+ClassABC item1;
+ClassABC item2;
+
+item1.fieldA = 1;
+item2.fieldA = 2;
+
+printf("item1.fieldA=%d\n", item1.fieldA);
+printf("item2.fieldA=%d\n", item2.fieldA);
+
+ClassABC item3(item1);
+item3.fieldA = 3;
+
+printf("item1.fieldA=%d\n", item1.fieldA); // 1
+printf("item3.fieldA=%d\n", item3.fieldA); // 3
+
+```
+
+
+
+### Objective-C
+
+```objective-c
+#import <Foundation/Foundation.h>
+@interface ClassABC : NSObject<NSCopying> // protocol NSCopying for copy object
+
+@property int fieldA;
+@property int fieldB;
+
+@end
+
+@implementation ClassABC
+
+- (nonnull instancetype)copyWithZone:(nullable NSZone *)zone { // NSCopying's method
+    ClassABC *newObj = [ClassABC new];
+    newObj.fieldA = self.fieldA;
+    newObj.fieldB = self.fieldB;
+    return newObj;
+}
+
+@end
+  
+ClassABC* item1 = [[ClassABC alloc] init];
+ClassABC* item2 = [ClassABC new]; // or in shorter way
+
+item1.fieldA = 1; // like property
+[item2 setFieldA: 2]; // by setter
+
+NSLog(@"item1.fieldA=%d\n", [item1 fieldA]); // 1
+NSLog(@"item2.fieldA=%d\n", item2.fieldA); // 2
+
+ClassABC* item3 = [item1 copy]; // ClassABC* item3 = item1 // changing pointer only
+item3.fieldA = 3; // like property
+
+NSLog(@"item1.fieldA=%d\n", item1.fieldA); // 1
+NSLog(@"item3.fieldA=%d\n", item3.fieldA); // 3
+```
+
+### Swift
+
+In Swift struct != class. 
+
+Struct:
 
 ```swift
-class ClassABC{
+struct ClassABC{
     var fieldA = 0
     var fieldB = 0
     // all fields need to be initialized if no 'init' function
     
 }
+
+// ///////////////////////////////////////////////
 
 var item1 = ClassABC()
 var item2 = ClassABC()
@@ -19,12 +95,112 @@ print("item2.fieldA=\(item2.fieldA)") // 2
 
 var item3 = item1 // copy
 item3.fieldA = 3
-print("item2.fieldA=\(item2.fieldA)") // 2
+print("item1.fieldA=\(item1.fieldA)") // 1
 print("item3.fieldA=\(item3.fieldA)") // 3
 
 ```
 
+Class:
 
+```swift
+class ClassABC : NSCopying { // NSCopying protocol
+    var fieldA = 0
+    var fieldB = 0
+    // all fields need to be initialized if no 'init' function
+    
+    func copy(with zone: NSZone? = nil) -> Any { // required by NSCopying
+        let ret = ClassABC()
+        ret.fieldA = self.fieldA
+        ret.fieldB = self.fieldB
+        return ret
+    }
+}
+
+// ///////////////////////////////////////////////
+
+var item1 = ClassABC()
+var item2 = ClassABC()
+
+item1.fieldA = 1
+item2.fieldA = 2
+
+print("item1.fieldA=\(item1.fieldA)") // 1
+print("item2.fieldA=\(item2.fieldA)") // 2
+
+var item3 = item1.copy() as! ClassABC // copy: as! required because copy return Any
+item3.fieldA = 3
+print("item1.fieldA=\(item1.fieldA)") // 1
+print("item3.fieldA=\(item3.fieldA)") // 3
+```
+
+The copying approach for class in Swift is similar to Objective-C way.
+
+# Class methods
+
+### C++
+
+```c++
+class ClassABC{
+public:
+    int fieldA;
+    int fieldB;
+    
+    void add(int addA, int addB){
+        this->fieldA = addA;
+        fieldB = addB;
+    }
+    
+    void print(){
+        printf("fieldA=%d\n", fieldA);
+        printf("fieldA=%d\n", fieldB);
+    }
+};
+
+// ///////////////////////////////////////////////
+
+ClassABC item4;
+item4.print();
+item4.add(10, 20);
+item4.print();
+```
+
+### Objective-C
+
+```objective-c
+
+@interface ClassABC : NSObject
+
+@property int fieldA;
+@property int fieldB;
+
+- (void) add: (int)addA and: (int)addB;
+- (void)print;
+
+@end
+
+@implementation ClassABC
+
+- (void)add: (int)addA and: (int)addB {
+    self.fieldA += addA;
+    self.fieldB += addB;
+}
+
+- (void)print {
+    printf("fieldA=%d\n", self.fieldA);
+    printf("fieldA=%d\n", self.fieldB);
+}
+
+@end
+
+// ///////////////////////////////////////////////
+
+ClassABC* item1 = [[ClassABC alloc] init];
+[item1 print];
+[item1 add:10 and:20];
+[item1 print];
+```
+
+### Swift
 
 ```swift
 class ClassABC{
@@ -43,6 +219,7 @@ class ClassABC{
     }
 }
 
+// ///////////////////////////////////////////////
 
 var item4 = ClassABC()
 item4.print()
@@ -50,11 +227,11 @@ item4.add(10, 20)
 item4.print()
 ```
 
-
-
-# Struct 
+# Swift Struct 
 
 ```swift
+import Foundation
+
 struct ClassABC { // works only for struct
     var fieldA = 0
     var fieldB:Int
@@ -69,9 +246,72 @@ item1.fieldB = 2
 let item2 = ClassABC(fieldA: 10, fieldB: 20, fieldC: 30)
 // item2.fieldA = 100 // ERROR: because item2 is const
 
+item1 = item2 // deep copy because of structure
+item1.fieldA = 113
+print("item1.fieldA=\(item1.fieldA)")
+print("item2.fieldA=\(item2.fieldA)")
+
 ```
 
 # Lazy initialization
+
+#### C++
+
+C++ doesn't have language support for lazy initialization, but it could done as below (getter example):
+
+```c++
+class Item{
+public:
+    int itemA = 0;
+};
+
+class Class {
+    Item* classItemAInternal = nullptr;
+public:
+    
+    Item* classItemA()
+    {
+        if (classItemAInternal == nullptr) {
+            classItemAInternal = new Item();
+        }
+        return classItemAInternal;
+    }
+};
+```
+
+Objective-C
+
+```objc
+
+@interface Item : NSObject
+
+@property int itemA;
+
+@end
+
+@implementation Item
+@end
+
+
+@interface ClassA : NSObject
+
+@property(nonatomic) Item *classItemA;
+
+@end
+
+@implementation ClassA
+
+- (Item *)classItemA {
+    if (_classItemA == nil) {
+        _classItemA = [Item new];
+    }
+    return _classItemA;
+}
+
+@end
+```
+
+Swift
 
 ```swift
 import Foundation
@@ -84,7 +324,7 @@ class Item{
 }
 
 class Class{
-    lazy var classItemA = Item()
+    lazy var classItemA = Item() // lazy can be used only with var - not with let
 }
 
 var cl1 = Class()// classItemA is not initilized now
@@ -94,6 +334,8 @@ print("\(cl1.classItemA.itemA)") // first usage, so classItemA is initialized an
 ```
 
 # Calculate property on-fly
+
+C++ & Objective-C implementation should follow approach as was written in 'lazy' initialization chapter. Swift has its own languages features for this.
 
 ```swift
 import Foundation
@@ -190,7 +432,21 @@ rgb.red = 100
 print("Red value: \(rgb.red) Ready: \(rgb.$red)")
 ```
 
-Static 
+# Static 
+
+C++
+
+```
+
+```
+
+Objective-C
+
+```
+
+```
+
+Swift
 
 ```swift
 
@@ -228,7 +484,7 @@ print("staticProperty=\(MyStruct.staticProperty) staticCalcProperty=\(MyStruct.s
 
 # Struct vs Class
 
-`struct
+struct
 
 ```swift
 struct Point {
@@ -266,7 +522,7 @@ print("The point is now at (\(somePoint.x), \(somePoint.y))")
 
 ```
 
-Order of init call
+# Order of init call
 
 Opposite of C++ constructor call order
 
