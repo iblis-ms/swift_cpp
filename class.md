@@ -436,17 +436,90 @@ print("Red value: \(rgb.red) Ready: \(rgb.$red)")
 
 C++
 
+```c++
+class Class {
+public:
+    //declaration of static variables
+    static const std::string staticConstVar;
+    static std::string staticVar;
+    // static function
+    static void fun(){}
+    
+};
+// definition of static variables
+std::string Class::staticVar = "static";
+const std::string Class::staticConstVar = "const static";
+
+// ///////////////////////
+const std::string& constVar = Class::staticConstVar;
+std::string& var = Class::staticVar;
+Class::staticVar = "new value";
+
+Class::fun();
 ```
 
+#### Objective-C
+
+```objc
+
+@interface ClassA : NSObject // Class is used in Foundation framework, so ClassA
+
+// attribute class 
+@property (class) NSString* staticVar;
+@property (class, readonly) NSString* staticConstVar; // however, NSString is nonmutable
+
++ (void)fun;
+@end
+
+@implementation ClassA
+
+
+static NSString* _staticVar = @"static";
+static const NSString* _staticConstVar = @"const static";
+
++ (void)fun {
+}
+
+// attribute class requires writing getters.
++ (const NSString*)staticConstVar {
+  return _staticConstVar;
+}
+
++ (NSString*)staticVar {
+  return _staticVar;
+}
+
++ (void)setStaticVar:(const NSString *)newValue {
+    _staticVar = [newValue copy];
+}
+@end
+
+// /////////////////////////
+const NSString* constVar = ClassA.staticConstVar;
+NSString* var = ClassA.staticVar;
+ClassA.staticVar = @"new value";
 ```
 
-Objective-C
+#### Swift
 
+```swift
+struct Class { // or class 
+    static var staticProperty = "static"
+    static let staticConstProperty = "static const"
+    
+    static func fun(){
+    }
+}
+
+var var1 = Class.staticProperty
+var var2 = Class.staticConstProperty
+
+Class.staticProperty = "new value"
+
+Class.fun()
 ```
 
-```
-
-Swift
+static also for enum
 
 ```swift
 
@@ -484,7 +557,7 @@ print("staticProperty=\(MyStruct.staticProperty) staticCalcProperty=\(MyStruct.s
 
 # Struct vs Class
 
-struct
+#### struct
 
 ```swift
 struct Point {
@@ -524,10 +597,142 @@ print("The point is now at (\(somePoint.x), \(somePoint.y))")
 
 # Order of init call
 
-Opposite of C++ constructor call order
+Opposite of C++ constructor/init call order
+
+#### C++
+
+```c++
+class ItemBase{
+public:
+    ItemBase(){
+        std::cout<<"ItemBase init\n";
+    }
+};
+
+class Base{
+    ItemBase itemBase;
+public:
+    Base(){
+        std::cout<<"Base init\n";
+    }
+};
+
+class ItemDerivative{
+public:
+    ItemDerivative(){
+        std::cout<<"ItemDerivative init\n";
+    }
+};
+
+class Derivative : public Base{
+    ItemDerivative item;
+public:
+    Derivative(){
+        std::cout<<"Derivative init\n";
+    }
+};
+// ///////////////////
+Derivative obj;
+/*
+ItemBase init
+Base init
+ItemDerivative init
+Derivative init
+*/
+```
+
+#### Objective-C
+
+```objc
+@interface ItemBase : NSObject
+- (instancetype)init;
+@end
+
+@implementation ItemBase
+
+- (instancetype)init{
+    NSLog(@"ItemBase init");
+    self = [super init];
+    if (self) {
+    }
+    return self;
+}
+
+@end
+
+@interface Base : NSObject
+
+@property(nonatomic) ItemBase *itemBase;
+
+- (instancetype)init;
+
+@end
+
+@implementation Base
+
+- (instancetype)init{
+    NSLog(@"Base init");
+    self = [super init];
+    if (self) {
+        _itemBase = [ItemBase new];
+    }
+    return self;
+}
+
+@end
+
+
+@interface ItemDerivative : NSObject
+- (instancetype)init;
+@end
+
+@implementation ItemDerivative
+
+- (instancetype)init{
+    NSLog(@"ItemDerivative init");
+    self = [super init];
+    if (self) {
+    }
+    return self;
+}
+
+@end
+
+
+@interface Derivative : Base
+
+@property(nonatomic) ItemDerivative *item;
+
+- (instancetype)init;
+
+@end
+
+@implementation Derivative
+
+- (instancetype)init{
+    NSLog(@"Derivative init");
+    self = [super init]; // developer needs to call base class init  - is not done automatically as in C++
+    if (self) {
+        _item = [ItemDerivative new];
+    }
+    return self;
+}
+
+@end
+
+// ///////////////////////////////////
+Derivative *obj = [Derivative new];
+/*
+2020-12-09 18:57:23.689746+0100 ObjectiveC_Test[14497:2345444] Derivative init
+2020-12-09 18:57:23.689791+0100 ObjectiveC_Test[14497:2345444] Base init
+2020-12-09 18:57:23.689823+0100 ObjectiveC_Test[14497:2345444] ItemBase init
+2020-12-09 18:57:23.689852+0100 ObjectiveC_Test[14497:2345444] ItemDerivative init
+*/
+```
+
+#### Swift
 
 ```swift
-
 class ItemBase{
     init(){
         print("ItemBase init")
@@ -595,6 +800,7 @@ class Derivative : Base{
     override init(){
         print("Derivative init")
         item = ItemDerivative()
+        super.init() // if written, it must be called after this class properties initialization
     }
 }
 
@@ -629,5 +835,156 @@ class ClassABC {
 var obj = ClassABC(arg1: 1)
 print("field1=\(obj.field1) field2=\(obj.field2)")
 
+```
+
+# Final - prevent inheritance and override
+
+C++ (C++ 11 feature)
+
+```c++
+struct Base {
+    virtual ~Base() = default;
+    
+    virtual void fun() = 0;
+};
+
+struct DerLevel1 : Base {
+    
+    virtual void fun() final {
+        
+    }
+};
+
+struct DerLevel2 : DerLevel1 {
+    
+    virtual void fun() {} // ERROR: because DerLevel1::fun is final
+
+};
+
+struct DerLevel2_final final : DerLevel1 {
+};
+
+struct DerLevel3 : DerLevel2_final { // ERROR: because DerLevel2_final is final
+};
+```
+
+Objective-C
+
+```
+
+```
+
+Swift
+
+```
+
+```
+
+# Class Interface required by function
+
+#### C++
+
+```c++
+struct MyInterface{
+    virtual ~MyInterface() = default;
+    virtual void onCall(const std::string& aMessage) = 0;
+};
+// //////////////////
+struct ClassABC : MyInterface {
+    void onCall(const std::string& aMessage){
+    }
+};
+// //////////////////
+void fun(MyInterface& aInterface){
+    aInterface.onCall("abc");
+}
+// //////////////////
+ClassABC obj;
+```
+
+#### Objective-C - protocols
+
+```objective-c
+@protocol MyInterface <NSObject>
+
+- (void)onCall:(NSString*) aMessage;
+
+@end
+// //////////////////
+@interface ClassABC : NSObject<MyInterface>
+- (void)onCall:(NSString*) aMessage;
+@end
+// //////////////////
+@implementation ClassABC
+
+- (void)onCall:(NSString*) aMessage {
+    NSLog(@"OnCall");
+}
+
+@end
+// //////////////////
+
+void fun(NSObject<MyInterface>* aInterface)  // NSObject
+{
+    [aInterface onCall:@"message"];
+}
+// //////////////////
+
+ClassABC* ptr = [ClassABC new];
+fun(ptr);
+```
+
+Using id with protocol.
+
+```objective-c
+@protocol MyInterface
+
+- (void)onCall:(NSString*) aMessage;
+
+@end
+// //////////////////
+@interface ClassABC : NSObject<MyInterface>
+- (void)onCall:(NSString*) aMessage;
+@end
+// //////////////////
+@implementation ClassABC
+
+- (void)onCall:(NSString*) aMessage {
+    NSLog(@"OnCall");
+}
+
+@end
+// //////////////////
+
+void fun(id<MyInterface> aInterface)
+{
+    [aInterface onCall:@"message"];
+}
+// //////////////////
+
+ClassABC* ptr = [ClassABC new];
+fun(ptr);
+```
+
+#### Swift
+
+```swift
+protocol MyInterface
+{
+    func onCall(aMessage : String)
+}
+// //////////////////////
+class ClassABC : MyInterface {
+    func onCall(aMessage: String) {
+        print(aMessage)
+    }
+}
+// //////////////////////
+func fun(_ aInterface : MyInterface){
+    aInterface.onCall(aMessage: "message")
+}
+// //////////////////////
+var obj = ClassABC()
+fun(obj)
 ```
 
