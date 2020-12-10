@@ -968,6 +968,8 @@ fun(ptr);
 
 #### Swift
 
+Class:
+
 ```swift
 protocol MyInterface
 {
@@ -986,5 +988,29 @@ func fun(_ aInterface : MyInterface){
 // //////////////////////
 var obj = ClassABC()
 fun(obj)
+```
+
+Struct:
+
+```swift
+protocol MyInterface
+{
+    mutating func onCall(aMessage : String) // mutating required for struct; However, protocol would work with class
+}
+// //////////////////////
+struct ClassABC : MyInterface {
+    var field = 0
+    mutating func onCall(aMessage: String) { // mutating because of struct
+        print(aMessage)
+        field = aMessage.count // changing state
+    }
+}
+// //////////////////////
+func fun(_ aInterface :  inout MyInterface){
+    aInterface.onCall(aMessage: "message")
+}
+// //////////////////////
+var obj: MyInterface = ClassABC() // type of protocol required
+fun(&obj)
 ```
 
