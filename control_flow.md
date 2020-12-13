@@ -98,6 +98,8 @@ var input = 0
 var res = input > 0 ? 1 : 0
 ```
 
+Kotlin doesn't have this operator.
+
 # For - loop
 
 Range based for is very similar in C++ and Swift except that the difference in end condition.

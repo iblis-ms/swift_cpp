@@ -28,8 +28,6 @@ printf("item3.fieldA=%d\n", item3.fieldA); // 3
 
 ```
 
-
-
 ### Objective-C
 
 ```objective-c
@@ -135,6 +133,34 @@ print("item3.fieldA=\(item3.fieldA)") // 3
 
 The copying approach for class in Swift is similar to Objective-C way.
 
+#### Kotlin
+
+```kotlin
+class ClassABC{
+    var fieldA:Int
+    var fieldB:Int
+
+    constructor(fieldA:Int, fieldB:Int) {
+        this.fieldA = fieldA
+        this.fieldB = fieldB
+    }
+}
+// ///////////////////
+var obj = ClassABC(1,2)
+println("obj.fieldA=${obj.fieldA} obj.fieldB=${obj.fieldB}")
+
+```
+
+Or ....
+
+```kotlin
+class ClassABC(var fieldA:Int, var fieldB:Int){ // if there is one constructor, everything can be in header
+}
+
+var obj = ClassABC(1,2)
+println("obj.fieldA=${obj.fieldA} obj.fieldB=${obj.fieldB}")
+```
+
 # Class methods
 
 ### C++
@@ -225,6 +251,55 @@ var item4 = ClassABC()
 item4.print()
 item4.add(10, 20)
 item4.print()
+```
+
+#### Kotlin
+
+```kotlin
+class ClassABC{
+    private var fieldA:Int
+    private var fieldB:Int
+
+    constructor(fieldA:Int, fieldB:Int) {
+        this.fieldA = fieldA
+        this.fieldB = fieldB
+    }
+
+    fun add(addA:Int, addB:Int) {
+        fieldA += addA
+        fieldB += addB
+    }
+
+    fun print() {
+        println("fieldA=$fieldA")
+        println("fieldB=$fieldB")
+    }
+}
+// ///////////////////
+var obj = ClassABC(0,0)
+obj.add(10, 20)
+obj.print()
+```
+
+or 
+
+```kotlin
+class ClassABC(var fieldA:Int, var fieldB:Int){ // if there is one constructor, everything can be in header
+
+    fun add(addA:Int, addB:Int) {
+        fieldA += addA
+        fieldB += addB
+    }
+
+    fun print() {
+        println("fieldA=$fieldA")
+        println("fieldB=$fieldB")
+    }
+}
+// ///////////////////
+var obj = ClassABC(0,0)
+obj.add(10, 20)
+obj.print()
 ```
 
 # Swift Struct 
@@ -333,6 +408,28 @@ print("\(cl1.classItemA.itemA)") // first usage, so classItemA is initialized an
 
 ```
 
+#### Kotlin
+
+```kotlin
+class Item{
+    var itemA:Int = 0
+    constructor(itemA:Int) {
+        println("Item")
+        this.itemA = itemA
+    }
+}
+
+class Class{
+    val classItemA:Item by lazy {
+        println("calculate")
+        Item(12) // last statement is initialization
+    }
+}
+// ////////////////////
+val obj = Class();
+println("${obj.classItemA.itemA}")
+```
+
 # Calculate property on-fly
 
 C++ & Objective-C implementation should follow approach as was written in 'lazy' initialization chapter. Swift has its own languages features for this.
@@ -389,6 +486,20 @@ obj.item = 2
 // didSet newValue: 2 oldValue: 1
 print("obj.item=\(obj.item)")
 // obj.item=100
+```
+
+#### Kotlin
+
+```kotlin
+class ClassABC {
+    var item:Int  by Delegates.observable(1) { // 1 is initial value
+            prop, old, new ->
+        println("$old -> $new")
+    }
+}
+// /////////////
+val obj = ClassABC();
+obj.item = 2
 ```
 
 # Restrictions
@@ -836,6 +947,171 @@ var obj = ClassABC(arg1: 1)
 print("field1=\(obj.field1) field2=\(obj.field2)")
 
 ```
+
+# Inheritance
+
+#### C++
+
+```c++
+class CBase {
+private:
+    int mBasePrivate;
+protected:
+    int mBaseProtected;
+public:
+    int mBasePublic;
+};
+// ////////////////////////
+class CClass : public CBase {
+private:
+    int mInheritPrivate;
+protected:
+    int mInheritProtected;
+public:
+    int mInheritPublic;
+    
+    void fun(){
+        // mBasePrivate = 0; // ERROR: 
+        mBaseProtected = 1;
+        mBasePublic = 2;
+        
+        mInheritPrivate = 3;
+        mInheritProtected = 4;
+        mInheritPublic = 5;
+    }
+};
+// ////////////////////////
+CClass obj;
+obj.mBasePublic = 6;
+obj.mInheritPublic = 7
+```
+
+Multiple base inheritance
+
+```c++
+class CBaseA {
+public:
+    int mBasePublic;
+};
+// ////////////////////////
+class CBaseB {
+public:
+    int mBasePublic;
+};
+// ////////////////////////
+class CClass: public CBaseA, public CBaseB {
+public:
+};
+// ////////////////////////
+CClass obj;
+```
+
+#### Objective-C
+
+```c++
+@interface CBase : NSObject{
+    @private
+    int _basePrivate;
+    
+    @protected
+    int _baseProtected;
+    
+    @public
+    int _basePublic;
+}
+
+@property int baseProperty;
+
+@end
+
+@implementation CBase
+
+@end
+// ///////////////////////
+@interface CClass : CBase {
+    @private
+    int _classPrivate;
+
+    @protected
+    int _classProtected;
+
+    @public
+    int _classPublic;
+}
+
+@property int classProperty;
+
+- (void)fun;
+
+@end
+
+@implementation CClass
+
+- (void)fun{
+    super.baseProperty = 0;
+    _baseProtected = 1;
+    _basePublic = 2;
+    // _classPrivate = 3; // ERROR: it is not visible
+    
+    _classPrivate = 4;
+    _classProtected = 5;
+    _classPublic = 6;
+    self.classProperty = 7;
+}
+@end
+// /////////////////////
+CClass* ptr = [CClass new];
+ptr.classProperty = 0;
+ptr.baseProperty = 1;
+```
+
+#### Swift
+
+```swift
+class CBase {
+    public var basePublic1 = 0
+    var basePublic2 = 1
+    fileprivate var baseFilePrivate = 2
+    private var basePrivate = 3
+}
+// /////////////////////
+class CClass : CBase {
+    public var classPublic1 = 0
+    var classPublic2 = 1
+    fileprivate var classFilePrivate = 2
+    private var classPrivate = 3
+    
+    func fun() {
+        self.basePublic1 = 10
+        self.basePublic2 = 20
+        self.baseFilePrivate = 30
+        // self.basePrivate = 40 // ERROR because not visible in CClass
+        self.classPublic1 = 11
+        self.classPublic2 = 12
+        self.classFilePrivate = 13
+        self.classPrivate = 14
+    }
+}
+// /////////////////////
+var obj = CClass()
+var a = 0
+a = obj.basePublic1
+a = obj.basePublic2
+a = obj.baseFilePrivate
+// a = obj.basePrivate // ERROR: because of private
+a = obj.classPublic1
+a = obj.classPublic2
+a = obj.classFilePrivate
+a = obj.classPrivate
+```
+
+#### Kotlin
+
+```
+
+```
+
+
 
 # Final - prevent inheritance and override
 

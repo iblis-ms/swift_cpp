@@ -212,6 +212,17 @@ let res = fun(0) // returned type is Optional<Int>
 print("res=\(String(describing:res))")
 ```
 
+Kotlin
+
+```kotlin
+fun funABC(arg: Int) : Int?{
+    return if (arg > 0)  arg else null
+}
+
+val res = funABC(0) 
+print("res=$res")
+```
+
 # Default argument value
 
 C++
@@ -350,6 +361,21 @@ var res = arithmeticMean(1, 2, 3, 4, 5.0)
 print("res=\(res)")
 ```
 
+Kotlin
+
+```kotlin
+fun arithmeticMean(vararg numbers: Double) : Double {
+    var total: Double = 0.0
+    for (number in numbers) {
+        total += number
+    }
+    return total / numbers.size
+}
+
+var res = arithmeticMean(1.0, 2.0, 3.0, 4.0, 5.0) // only double type
+print("res=$res")
+```
+
 # Pointer to function & Function types 
 
 C++
@@ -382,5 +408,17 @@ var res1 = 0.0
 var res2 = 0.0
 res1 = f1(10, &res2)
 print("res1=\(res1) res2=\(res2)")
+```
+
+Kotlin
+
+```kotlin
+fun funABC(arg1 : Int) : Double {
+    val tmp =  0.5 * arg1
+    return tmp
+}
+
+var fp:(Int)->Double = ::funABC
+var res = fp(1)
 ```
 
