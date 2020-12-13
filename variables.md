@@ -51,6 +51,18 @@ var boolVariable:Bool = true
 var charVariable:Character = "C" // "" instead of C style 'C'
 ```
 
+Kotlin
+
+```kotlin
+var intVariable:Int = -10
+var uintVariable:UInt = 20U // required U
+var floatVariable:Float = 2.3F // requird F
+var doubleVariable:Double = 3.3
+var strVariable:String = "abc"
+var boolVariable:Boolean = true
+var charVariable:Char = 'C' 
+```
+
 # Architecture independent integers
 
 C++ provides aliases to easily work with architecture independent integer. Therefore, it is required to include <cstdint> header file, where architecture independent types are defined.
@@ -74,6 +86,19 @@ There are also float types with defined number of bits, which are not present in
 ```swift
 var float32Variable:Float32
 var float32Variable:Float32
+```
+
+Kotlin
+
+The bit size of typThe same approach as in Java. Unsigned types were added in Kotlin 1.3.
+
+```kotlin
+var variable8bit:Byte = 0
+var variable16bit:Short = 0
+var variable32bit:Int = 0
+var variable64bit:Long = 0
+var variable32bitFloat:Float = 0.0f
+var variable64bitFloat:Double = 0.0
 ```
 
 ## Type information
@@ -122,6 +147,14 @@ var floatMax:Float32  = Float32.greatestFiniteMagnitude
 var floatMinPositiveValue:Float32  = Float32.leastNormalMagnitude
 ```
 
+### Kotlin
+
+```kotlin
+var max8bitUnsignedInteger:UByte = UByte.MAX_VALUE
+var floatMax:Float  = Float.MAX_VALUE
+var floatMinPositiveValue:Float  = Float.MIN_VALUE
+```
+
 # String data type
 
 C++ has C-style string and std::string (and std::string_view from C++17) for string operations. 
@@ -160,9 +193,26 @@ In string header, std::string class is defined. It use dynamic memory allocation
 std::string str("abc"); // creates a string object, put "abc" to dynamically allocated memory inside.
 size_t length = str.length(); // get the length
 str[1] = "D"; // change "abc" to "aDc"
+char c = str[0];
 ```
 
 In this case, std::string allocates and deallocates memory if it required. Functions to manipulate on string are parts of std::string. It is easy to use.
+
+### Objective-C
+
+```objective-c
+NSString* str = @"abc";
+unichar c1 = [str characterAtIndex:0];
+        
+NSMutableString *mutableString = [NSMutableString new];
+[mutableString appendString: @"def"];
+unichar c2 = [mutableString characterAtIndex:1];
+        
+[mutableString replaceCharactersInRange:NSMakeRange(2, 1) withString:@"D"];
+NSLog(@"%@",mutableString);
+```
+
+
 
 ### Swift string
 
@@ -175,6 +225,20 @@ let start = strTest.index(strTest.startIndex, offsetBy: 1); // convert index to 
 let end = strTest.index(strTest.startIndex, offsetBy: 2); // as above
 strTest.replaceSubrange(start..<end, with: "D") // now strTest is aDc
 
+```
+
+### Kotlin
+
+```kotlin
+var strTest = "abc"
+var length = strTest.length
+
+var c = strTest[0]
+// strTest[0] = 'D' // ERROR
+
+var charArray = strTest.toCharArray()
+charArray[0] = 'D'
+var newString = String(charArray)
 ```
 
 # Constants
@@ -200,6 +264,13 @@ let constVar:Int = 2
 constVar = 3 // ERROR
 ```
 
+Kotlin
+
+```kotlin
+val intVal:Int = 2
+intVal = 3 // ERROR
+```
+
 # Automatic type deduction
 
 C++ from C++11 supports automatic type deduction. Swift has also this functionality.
@@ -215,5 +286,86 @@ Swift version:
 ```swift
 var thisIsInt = 2
 var thisIsDouble = 3.0 // however.. "Swift always chooses Double (rather than Float)" - rather?
+```
+
+Kotlin:
+
+```kotlin
+var thisIsInt = 2
+var thisIsDouble = 3.0
+```
+
+# Nullable type
+
+C++ (completely different approach than in Swift/Kotlin) - null are used for pointers
+
+```c++
+int var = 100;
+int* varIntNullable = &var;
+std::cout<<*varIntNullable<<std::endl;
+*varIntNullable = 10;
+std::cout<<*varIntNullable<<std::endl;
+varIntNullable = nullptr;
+// std::cout<<*varIntNullable<<std::endl; // crash
+varIntNullable = &var; 
+*varIntNullable = 20;
+
+```
+
+C++17 has std::optional structure
+
+```c++
+std::optional<int> varIntNullable(100);
+std::cout<<*varIntNullable<<std::endl;
+*varIntNullable = 10;
+std::cout<<*varIntNullable<<std::endl;
+varIntNullable.reset();
+std::cout<<*varIntNullable<<std::endl; // no check if value exists
+*varIntNullable = 20;
+std::cout<<*varIntNullable<<std::endl;
+
+std::optional<std::string> strValNullable("abc");
+strValNullable.reset();
+std::string value = *strValNullable;
+```
+
+Swift
+
+```swift
+var varIntNullable: Int? = 100
+print(varIntNullable)
+varIntNullable = 10
+print(varIntNullable)
+varIntNullable = nil
+print(varIntNullable)
+varIntNullable = 20
+var varInt:Int = varIntNullable! // or: as! Int
+print(varInt)
+
+var strVar = "abc"
+strVar = nil // error
+var strValNullable:String? = "abc"
+print(strValNullable?.count)
+strValNullable = nil
+```
+
+Kotlin
+
+```kotlin
+var varIntNullable: Int? = 100
+println(varIntNullable)
+varIntNullable = 10
+println(varIntNullable)
+varIntNullable = null
+println(varIntNullable)
+varIntNullable = 20
+var varInt:Int = varIntNullable!! // or: as Int - if varIntNullable is null, exception
+println(varInt)
+
+var strVar = "abc"
+strVar = nil // error
+var strValNullable:String? = "abc"
+println(strValNullable!!.length)
+strValNullable = null
 ```
 

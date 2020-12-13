@@ -54,6 +54,30 @@ if variable1 == 4 || variable1 == 5 {// || is logical or, && is logical and
 
 ```
 
+Kotlin
+
+```kotlin
+val variable1 = 0
+val variable2 = 1
+if (variable1 > 0) { // brackets are optional: if (variable1 > 0) is also OK
+    // ...
+}
+
+if (variable2 < 5) {
+    // ...
+}
+else if (variable1 == 8) {
+    // ...
+}
+else {
+    // ...
+}
+
+if ((variable1 == 4) || (variable1 == 5)) {// || is logical or, && is logical and
+    // ...
+}
+```
+
 C++ & Swift have ternary operator: 
 
 ```
@@ -73,8 +97,6 @@ Swift
 var input = 0
 var res = input > 0 ? 1 : 0
 ```
-
- 
 
 # For - loop
 
@@ -108,6 +130,20 @@ for index in beg..<end { // ..< means lower than end; beg...end means lower or e
 }
 ```
 
+Kotlin
+
+```kotlin
+for ( index in 0..10) {
+    // ... index is constant,m like: val index
+}
+
+val beg = 0
+val end = 10
+for (index in beg..end) {
+    // ...
+}
+```
+
 Iteration through array is also similar to C++11 foreach.
 
 C++:
@@ -125,6 +161,15 @@ Swift:
 let array = [0, 1, 2, 3]
 for item in array{
     //...
+}
+```
+
+Kotlin
+
+```kotlin
+val array: IntArray = intArrayOf(1, 2, 3)
+for (item in array) {
+    // ...
 }
 ```
 
@@ -154,6 +199,15 @@ for (key, value) in map {
 }
 ```
 
+Kotlin
+
+```kotlin
+val numbersMap = mapOf("one" to 1, "two" to 2, "three" to 3)
+for ((key, value) in numbersMap){
+    println("$key=$value")
+}
+```
+
 # While - loop
 
 C++
@@ -171,6 +225,15 @@ Swift:
 var variable = 0
 while variable < 10 {
 	// ...
+}
+```
+
+Kotlin:
+
+```kotlin
+var variable = 0
+while (variable < 10) {
+    // ...
 }
 ```
 
@@ -192,6 +255,15 @@ var variable = 0
 repeat {
 	// ...
 } variable < 5
+```
+
+Kotlin
+
+```kotlin
+var variable = 0;
+do {
+	// ...
+} while (variable < 5);
 ```
 
 # Switch
@@ -279,6 +351,20 @@ switch variable {
     // ...
   default:
     // ...
+}
+```
+
+Kotlin
+
+```kotlin
+var variable = 1.2
+when (variable) {
+    1.2 -> // ...
+    1.3 -> {
+        // ...
+    }
+    in 2.0..5.0 -> // ...
+    else -> // ...
 }
 ```
 

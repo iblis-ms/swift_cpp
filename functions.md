@@ -20,6 +20,16 @@ func fun(){
 fun()
 ```
 
+Kotlin
+
+```kotlin
+fun funABC(){ // Kotlin: fun; Swift: func... ehh
+    print("abc")
+}
+
+funABC()
+```
+
 # Function with arguments
 
 C++
@@ -60,6 +70,18 @@ func fun(_ arg1: String, _ arg2: Int){
 }
 
 fun("A", 1)
+```
+
+Kotlin
+
+```kotlin
+fun funABC(arg1: String, arg2: Int){
+    print("arg1=$arg1 arg2=$arg2")
+}
+
+funABC("A", 1)
+funABC(arg1 = "A", arg2 = 1)
+funABC(arg2 = 1, arg1 = "A")
 ```
 
 # Return value
@@ -121,6 +143,16 @@ func fun() -> Int{
 }
 
 print("res=\(fun())")
+```
+
+Kotlin
+
+```kotlin
+fun funABC(arg1: Int) : Float{
+    return 1.5F * arg1
+}
+
+var res = funABC(1)
 ```
 
 
@@ -219,6 +251,19 @@ In Swift, a default value can be set for any argument, so following code is OK:
 func fun(arg1: Int = 1, arg2: Int){
     print("arg1=\(arg1) arg2=\(arg2)")
 }
+```
+
+Kotlin
+
+```kotlin
+fun funABC(arg1: Int = 1, arg2: Int = 2) {
+    println("arg1=$arg1 arg2=$arg2")
+}
+
+funABC() // arg1 = 1, arg2 = 2
+funABC(3) // arg1 = 3, arg2 = 2
+funABC(arg1 = 3, arg2 = 4) // arg1=3 arg2=4
+funABC(arg2 = 5) //arg1=1 arg2=5 , so similar to Swift
 ```
 
 # Return via argument
