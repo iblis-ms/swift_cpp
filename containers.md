@@ -90,7 +90,7 @@ for item in array4{
 
 Swift array are like std::vector.
 
-**!!!!!! ADD example with custom objects, because of shared object in Swift array.**
+
 
 For performance reason in C++ and Swift it is highly recommended to set capacity of C++ std::vector and Swift Array before adding item.
 

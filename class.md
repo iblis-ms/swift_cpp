@@ -703,6 +703,24 @@ MyStruct.staticProperty = "new Struct value"
 print("staticProperty=\(MyStruct.staticProperty) staticCalcProperty=\(MyStruct.staticCalcProperty)")
 ```
 
+Kotlin
+
+```kotlin
+class ClassABC{
+    companion object { // 
+        var thisIsStaticVar:Int = 0
+
+        fun staticFun(){
+            println("staticFun: $thisIsStaticVar")
+        }
+    }
+}
+ClassABC.thisIsStaticVar++;
+ClassABC.staticFun() // print: staticFun: 1
+```
+
+
+
 # Struct vs Class
 
 #### struct
@@ -1237,17 +1255,42 @@ struct DerLevel3 : DerLevel2_final { // ERROR: because DerLevel2_final is final
 };
 ```
 
-Objective-C
+#### Objective-C
 
 ```
 
 ```
 
-Swift
+#### Swift
 
+```swift
+class Base {
+    
+    func fun() {
+        print("fun")
+    }
+}
+
+class Der : Base {
+    
+    override final func fun()  {
+        print("Der fun")
+    }
+}
+
+final class Der2 : Der{
+    override func fun() { // ERROR: fun is final in Der
+        print("Der2 fun")
+    }
+}
+
+class Der3 : Der2 { // ERROR: Der2 is final
+}
 ```
 
-```
+#### Kotlin
+
+Classes in Kotlin are by default final.
 
 # Class Interface required by function
 
@@ -1381,5 +1424,27 @@ func fun(_ aInterface :  inout MyInterface){
 // //////////////////////
 var obj: MyInterface = ClassABC() // type of protocol required
 fun(&obj)
+```
+
+Kotlin
+
+```kotlin
+interface MyInterface{
+    fun onCall(aMessage : String)
+}
+// //////////////////////
+class ClassABC : MyInterface{
+    override fun onCall(aMessage: String) {
+        print(aMessage)
+    }
+
+}
+// //////////////////////
+fun funABC(aInterface : MyInterface){
+    aInterface.onCall("abc")
+}
+// //////////////////////
+val obj = ClassABC()
+funABC(obj)
 ```
 
