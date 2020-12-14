@@ -161,6 +161,43 @@ var obj = ClassABC(1,2)
 println("obj.fieldA=${obj.fieldA} obj.fieldB=${obj.fieldB}")
 ```
 
+constructors' hell
+
+```kotlin
+class ClasABC { // no 'primary' constructor
+    var field:Int
+
+    constructor(arg1:Int, arg2:Int) { // 'secondary' constructor
+        field = arg1 + arg2
+        println("This is constructor")
+    }
+
+    constructor(arg1:Int, arg2:Int, arg3:Int){ // 'secondary' constructor
+        field = arg1 + arg2 + arg3
+    }
+}
+```
+
+with primary constructor
+
+```kotlin
+class ClasABC(var arg:Int) { // primary constructor
+    var field:Int = arg
+
+    constructor(arg1:Int, arg2:Int) : this(arg1 + arg2){ // primary must be called
+    }
+
+    constructor(arg1:Int, arg2:Int, arg3:Int) : this(arg1 + arg2 + arg3){// as above
+    }
+}
+
+val obj1 = ClasABC(1)
+val obj2 = ClasABC(1, 2)
+val obj3 = ClasABC(1, 2, 3)
+```
+
+
+
 # Class methods
 
 ### C++
@@ -706,6 +743,193 @@ print("The point is now at (\(somePoint.x), \(somePoint.y))")
 
 ```
 
+# Inheritance
+
+#### C++
+
+```c++
+class CBase {
+private:
+    int mBasePrivate;
+protected:
+    int mBaseProtected;
+public:
+    int mBasePublic;
+};
+// ////////////////////////
+class CClass : public CBase {
+private:
+    int mInheritPrivate;
+protected:
+    int mInheritProtected;
+public:
+    int mInheritPublic;
+    
+    void fun(){
+        // mBasePrivate = 0; // ERROR: 
+        mBaseProtected = 1;
+        mBasePublic = 2;
+        
+        mInheritPrivate = 3;
+        mInheritProtected = 4;
+        mInheritPublic = 5;
+    }
+};
+// ////////////////////////
+CClass obj;
+obj.mBasePublic = 6;
+obj.mInheritPublic = 7
+```
+
+Multiple base inheritance
+
+```c++
+class CBaseA {
+public:
+    int mBasePublic;
+};
+// ////////////////////////
+class CBaseB {
+public:
+    int mBasePublic;
+};
+// ////////////////////////
+class CClass: public CBaseA, public CBaseB {
+public:
+};
+// ////////////////////////
+CClass obj;
+```
+
+#### Objective-C
+
+```c++
+@interface CBase : NSObject{
+    @private
+    int _basePrivate;
+    
+    @protected
+    int _baseProtected;
+    
+    @public
+    int _basePublic;
+}
+
+@property int baseProperty;
+
+@end
+
+@implementation CBase
+
+@end
+// ///////////////////////
+@interface CClass : CBase {
+    @private
+    int _classPrivate;
+
+    @protected
+    int _classProtected;
+
+    @public
+    int _classPublic;
+}
+
+@property int classProperty;
+
+- (void)fun;
+
+@end
+
+@implementation CClass
+
+- (void)fun{
+    super.baseProperty = 0;
+    _baseProtected = 1;
+    _basePublic = 2;
+    // _classPrivate = 3; // ERROR: it is not visible
+    
+    _classPrivate = 4;
+    _classProtected = 5;
+    _classPublic = 6;
+    self.classProperty = 7;
+}
+@end
+// /////////////////////
+CClass* ptr = [CClass new];
+ptr.classProperty = 0;
+ptr.baseProperty = 1;
+```
+
+#### Swift
+
+```swift
+class CBase {
+    public var basePublic1 = 0
+    var basePublic2 = 1
+    fileprivate var baseFilePrivate = 2
+    private var basePrivate = 3
+}
+// /////////////////////
+class CClass : CBase {
+    public var classPublic1 = 0
+    var classPublic2 = 1
+    fileprivate var classFilePrivate = 2
+    private var classPrivate = 3
+    
+    func fun() {
+        self.basePublic1 = 10
+        self.basePublic2 = 20
+        self.baseFilePrivate = 30
+        // self.basePrivate = 40 // ERROR because not visible in CClass
+        self.classPublic1 = 11
+        self.classPublic2 = 12
+        self.classFilePrivate = 13
+        self.classPrivate = 14
+    }
+}
+// /////////////////////
+var obj = CClass()
+var a = 0
+a = obj.basePublic1
+a = obj.basePublic2
+a = obj.baseFilePrivate
+// a = obj.basePrivate // ERROR: because of private
+a = obj.classPublic1
+a = obj.classPublic2
+a = obj.classFilePrivate
+a = obj.classPrivate
+```
+
+#### Kotlin
+
+```kotlin
+open class Base { // in Kotlin classes are 'final' by default
+    public var basePublic = 0
+    protected var baseProtected = 0
+    private var basePrivate = 0
+}
+// //////////////////////////////
+class Class : Base() {
+    public var classPublic = 0
+    protected var classProtected = 0
+    private var classPrivate = 0
+
+    fun funABC(){
+        basePublic = 1
+        baseProtected = 2
+        // basePrivate = 3 // ERROR: not visible
+        classPublic = 4
+        classProtected = 5
+        classPrivate = 6
+
+    }
+}
+//////////////////////////////
+val obj = Class()
+obj.classPublic = 10
+obj.basePublic = 11
+```
+
 # Order of init call
 
 Opposite of C++ constructor/init call order
@@ -948,170 +1172,39 @@ print("field1=\(obj.field1) field2=\(obj.field2)")
 
 ```
 
-# Inheritance
+Kotlin
 
-#### C++
-
-```c++
-class CBase {
-private:
-    int mBasePrivate;
-protected:
-    int mBaseProtected;
-public:
-    int mBasePublic;
-};
-// ////////////////////////
-class CClass : public CBase {
-private:
-    int mInheritPrivate;
-protected:
-    int mInheritProtected;
-public:
-    int mInheritPublic;
-    
-    void fun(){
-        // mBasePrivate = 0; // ERROR: 
-        mBaseProtected = 1;
-        mBasePublic = 2;
-        
-        mInheritPrivate = 3;
-        mInheritProtected = 4;
-        mInheritPublic = 5;
-    }
-};
-// ////////////////////////
-CClass obj;
-obj.mBasePublic = 6;
-obj.mInheritPublic = 7
-```
-
-Multiple base inheritance
-
-```c++
-class CBaseA {
-public:
-    int mBasePublic;
-};
-// ////////////////////////
-class CBaseB {
-public:
-    int mBasePublic;
-};
-// ////////////////////////
-class CClass: public CBaseA, public CBaseB {
-public:
-};
-// ////////////////////////
-CClass obj;
-```
-
-#### Objective-C
-
-```c++
-@interface CBase : NSObject{
-    @private
-    int _basePrivate;
-    
-    @protected
-    int _baseProtected;
-    
-    @public
-    int _basePublic;
-}
-
-@property int baseProperty;
-
-@end
-
-@implementation CBase
-
-@end
+```kotlin
 // ///////////////////////
-@interface CClass : CBase {
-    @private
-    int _classPrivate;
+open class Base { // in Kotlin classes are 'final' by default
+    var baseFieldA:ItemBase = ItemBase()
 
-    @protected
-    int _classProtected;
-
-    @public
-    int _classPublic;
-}
-
-@property int classProperty;
-
-- (void)fun;
-
-@end
-
-@implementation CClass
-
-- (void)fun{
-    super.baseProperty = 0;
-    _baseProtected = 1;
-    _basePublic = 2;
-    // _classPrivate = 3; // ERROR: it is not visible
-    
-    _classPrivate = 4;
-    _classProtected = 5;
-    _classPublic = 6;
-    self.classProperty = 7;
-}
-@end
-// /////////////////////
-CClass* ptr = [CClass new];
-ptr.classProperty = 0;
-ptr.baseProperty = 1;
-```
-
-#### Swift
-
-```swift
-class CBase {
-    public var basePublic1 = 0
-    var basePublic2 = 1
-    fileprivate var baseFilePrivate = 2
-    private var basePrivate = 3
-}
-// /////////////////////
-class CClass : CBase {
-    public var classPublic1 = 0
-    var classPublic2 = 1
-    fileprivate var classFilePrivate = 2
-    private var classPrivate = 3
-    
-    func fun() {
-        self.basePublic1 = 10
-        self.basePublic2 = 20
-        self.baseFilePrivate = 30
-        // self.basePrivate = 40 // ERROR because not visible in CClass
-        self.classPublic1 = 11
-        self.classPublic2 = 12
-        self.classFilePrivate = 13
-        self.classPrivate = 14
+    constructor(){
+        println("Base constructor")
     }
 }
-// /////////////////////
-var obj = CClass()
-var a = 0
-a = obj.basePublic1
-a = obj.basePublic2
-a = obj.baseFilePrivate
-// a = obj.basePrivate // ERROR: because of private
-a = obj.classPublic1
-a = obj.classPublic2
-a = obj.classFilePrivate
-a = obj.classPrivate
+// ///////////////////////
+class ItemDerivative{
+    constructor(){
+        println("ItemDerivative constructor")
+    }
+}
+// ///////////////////////
+class Derivative : Base {
+    var item:ItemDerivative = ItemDerivative()
+    constructor(){
+        println("Derivative constructor")
+    }
+}
+// ///////////////////////
+val obj1 = Derivative()
+/* C++/Java order
+ItemBase constructor
+Base constructor
+ItemDerivative constructor
+Derivative constructor
+ */
 ```
-
-#### Kotlin
-
-```
-
-```
-
-
 
 # Final - prevent inheritance and override
 
