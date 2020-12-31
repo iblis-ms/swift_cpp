@@ -528,6 +528,36 @@ print("obj.item=\(obj.item)")
 #### Kotlin
 
 ```kotlin
+class Square{
+    var size = 0.0
+}
+
+class SquareMath {
+    var square = Square()
+    var area:Double
+        get(){ // get that calculates on fly
+            return square.size * square.size
+        }
+        set(newArea){ // set square's size via 'fake' setter; if empty name: newValue name is avaible
+            square.size = Math.sqrt(newArea)
+        }
+
+    val perimeter: Double get(){ // read only property
+        return 4.0 * square.size
+    }
+}
+// /////////////
+var item = SquareMath()
+item.area = 9.0
+println("size: ${item.square.size}") // size: 3.0
+println("area: ${item.area}") // area: 9.0
+println("perimeter: ${item.perimeter}")
+// item.perimeter = 30 // ERROR: read only property
+```
+
+Observers:
+
+```kotlin
 class ClassABC {
     var item:Int  by Delegates.observable(1) { // 1 is initial value
             prop, old, new ->
